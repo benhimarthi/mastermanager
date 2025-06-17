@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/session/session.manager.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -12,8 +14,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
     Future.delayed(const Duration(seconds: 3), () {
-      GoRouter.of(context).go('/login');
+      final currentUser = SessionManager.getUserSession();
+      GoRouter.of(context).go(currentUser != null ? "/users" : "/login");
     });
   }
 

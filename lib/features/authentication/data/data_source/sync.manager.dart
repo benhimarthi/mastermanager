@@ -30,16 +30,19 @@ class SyncManager {
   }
 
   Future<void> _syncPendingUserUpdates() async {
-    final updatedUsers = await _localDataSource.getUpdatedUsers();
-
-    for (final user in updatedUsers) {
-      await _remoteDataSource.updateUser(user);
-      await _localDataSource.clearUpdateFlag(user.id);
+    try {
+      final updatedUsers = await _localDataSource.getUpdatedUsers();
+      print("Fetched updated users: $updatedUsers");
+      for (final user in updatedUsers) {
+        await _remoteDataSource.updateUser(user);
+        await _localDataSource.clearUpdateFlag(user.id);
+      }
+    } catch (e, stack) {
+      print("Error in _syncPendingUserUpdates: $e\n$stack");
     }
   }
 
   Future<void> _syncPendingUserDeletions() async {
-    print("JJJJJJJJJJJJJJJJJSSSSSSSSSSSSSSSSSSSS");
     final deletedUsers = await _localDataSource.getDeletedUserIds();
     for (final userId in deletedUsers) {
       await _remoteDataSource.deleteUser(userId);

@@ -27,6 +27,7 @@ class SyncTriggerCubit extends Cubit<SyncTriggerState> {
 
   void runOnAppStart() async {
     emit(SyncInProgress());
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult != ConnectivityResult.none) {
       try {

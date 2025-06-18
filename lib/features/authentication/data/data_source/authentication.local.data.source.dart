@@ -112,11 +112,12 @@ class AuthenticationLocalDataSrcImpl implements AuthenticationLocalDataSource {
 
   @override
   Future<void> markUserAsUpdated(UserModel user) async {
-    final updatedUsers = _hiveBox
-        .get("updated_users", defaultValue: <List<Map<String, dynamic>>>[]);
-    updatedUsers
-        .removeWhere((u) => u["id"] == user.id); // Prevent duplicate entries
-    updatedUsers.add([user.toMap()]);
+    final updatedUsers =
+        _hiveBox.get("updated_users", defaultValue: List<Map<String, dynamic>>);
+    updatedUsers.removeWhere((u) {
+      return u["id"] == user.id;
+    }); // Prevent duplicate entries
+    updatedUsers.add(user.toMap());
     await _hiveBox.put("updated_users", updatedUsers);
   }
 
@@ -147,9 +148,10 @@ class AuthenticationLocalDataSrcImpl implements AuthenticationLocalDataSource {
 
   @override
   Future<List<UserModel>> getUpdatedUsers() async {
-    final updatedUsers = _hiveBox
-        .get("updated_users", defaultValue: <List<Map<String, dynamic>>>[]);
-    return updatedUsers.map((data) => UserModel.fromMap(data)).toList();
+    final updatedUsers =
+        _hiveBox.get("updated_users", defaultValue: List<Map<String, dynamic>>);
+    var t = updatedUsers.map((data) => UserModel.fromMap(data)).toList();
+    return t;
   }
 
   @override

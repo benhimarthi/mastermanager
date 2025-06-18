@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/service/depenedancy.injection.dart';
 import 'package:mastermanager/features/authentication/domain/entities/user.dart';
@@ -31,7 +32,7 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final User? startingUser;
 
   const MyApp({
@@ -39,7 +40,25 @@ class MyApp extends StatelessWidget {
     required this.startingUser,
   });
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  @override
+  void initState() {
+    super.initState();
+    // Listen for connectivity changes
+    /*Connectivity().onConnectivityChanged.listen((connectivityResult) {
+      if (connectivityResult != ConnectivityResult.none) {
+        context.read<SyncTriggerCubit>().runOnAppStart();
+      }
+    });*/
+    final syncTriggerCubit = GetIt.instance<SyncTriggerCubit>();
+    syncTriggerCubit.runOnAppStart();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -50,12 +69,6 @@ class MyApp extends StatelessWidget {
               create: (context) => getIt<SyncTriggerCubit>()),
         ],
         child: Builder(builder: ((context) {
-          // Listen for connectivity changes
-          Connectivity().onConnectivityChanged.listen((connectivityResult) {
-            if (connectivityResult != ConnectivityResult.none) {
-              context.read<SyncTriggerCubit>().runOnAppStart();
-            }
-          });
           return MaterialApp.router(
             title: 'your Manager',
             theme: AppTheme.lightTheme,

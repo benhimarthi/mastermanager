@@ -13,7 +13,7 @@ class CreateUser extends UsecaseWithParams<void, CreateUserParams> {
       _repository.createUser(
         name: params.name,
         email: params.email,
-        avatar: params.avatar,
+        password: params.password,
         role: params.role,
       );
 }
@@ -21,13 +21,13 @@ class CreateUser extends UsecaseWithParams<void, CreateUserParams> {
 class CreateUserParams {
   final String name;
   final String email;
-  final String avatar;
+  final String password;
   final UserRole role;
 
   const CreateUserParams({
     required this.name,
     required this.email,
-    required this.avatar,
+    required this.password,
     required this.role,
   });
 }

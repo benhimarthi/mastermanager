@@ -14,8 +14,7 @@ class SyncManager {
     if (connectivityResult == ConnectivityResult.none) {
       return; // No internet connection, skip sync
     }
-
-    await _syncPendingUserCreations();
+    //await _syncPendingUserCreations();
     await _syncPendingUserUpdates();
     await _syncPendingUserDeletions();
   }
@@ -32,6 +31,7 @@ class SyncManager {
 
   Future<void> _syncPendingUserUpdates() async {
     final updatedUsers = await _localDataSource.getUpdatedUsers();
+
     for (final user in updatedUsers) {
       await _remoteDataSource.updateUser(user);
       await _localDataSource.clearUpdateFlag(user.id);
@@ -39,6 +39,7 @@ class SyncManager {
   }
 
   Future<void> _syncPendingUserDeletions() async {
+    print("JJJJJJJJJJJJJJJJJSSSSSSSSSSSSSSSSSSSS");
     final deletedUsers = await _localDataSource.getDeletedUserIds();
     for (final userId in deletedUsers) {
       await _remoteDataSource.deleteUser(userId);

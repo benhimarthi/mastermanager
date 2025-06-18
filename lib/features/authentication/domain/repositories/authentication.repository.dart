@@ -6,7 +6,7 @@ abstract class AuthenticationRepository {
   ResultVoid createUser({
     required String name,
     required String email,
-    required String avatar,
+    required String password,
     required UserRole role,
   });
   ResultFuture<User> loginWithEmail({

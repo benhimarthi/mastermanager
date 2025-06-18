@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/user.dart';
 import '../../cubit/authentication.cubit.dart';
 import '../../cubit/authentication.state.dart';
-import '../synchronisation/pending.sync.badge.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -34,7 +33,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("User Management")),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.home),
+            ),
+            const Text("User Management"),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.person),
+          )
+        ],
+      ),
       body: BlocBuilder<AuthenticationCubit, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthenticationLoading) {
@@ -73,7 +88,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 }
 
 class _EditUserDialog extends StatefulWidget {
-  const _EditUserDialog({required this.user, super.key});
+  const _EditUserDialog({required this.user});
 
   final User user;
 

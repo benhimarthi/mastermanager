@@ -15,6 +15,18 @@ class UserModel extends User {
   factory UserModel.fromJson(String source) =>
       UserModel.fromMap(jsonDecode(source) as Map<String, dynamic>);
 
+  factory UserModel.fromUser(User user) {
+    return UserModel(
+      id: user.id,
+      createdAt: user.createdAt,
+      name: user.name,
+      avatar: user.avatar,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+    );
+  }
+
   UserModel.fromMap(Map<String, dynamic> map)
       : this(
           id: map['id'] as String,
@@ -22,7 +34,7 @@ class UserModel extends User {
           name: map['name'] as String,
           avatar: map['avatar'] as String,
           email: map['email'] as String,
-          password: map['password'] as String,
+          password: "empty",
           role: UserRole.values.firstWhere((e) => e.toString() == map['role']),
         );
 

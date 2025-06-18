@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../cubit/authentication.cubit.dart';
 import '../../cubit/authentication.state.dart';
 import '../synchronisation/sync.banner.dart';
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SnackBar(content: Text(state.message)),
                 );
               } else if (state is UserAuthenticated) {
-                Navigator.pushReplacementNamed(context, "/home");
+                Navigator.pushReplacementNamed(context, "/users");
               } else if (state is AuthenticationOfflinePending) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -102,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: const InputDecoration(
                               label: Text("mail adress"),
                               prefixIcon: Icon(
-                                Icons.person,
+                                Icons.mail,
                                 color: Color.fromARGB(127, 106, 106, 106),
                               ),
                             ),
@@ -114,6 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .hasMatch(value!);
                               if (!emailValid) {
                                 return "Invalid email address, insert a valid mail address!";
+                              } else if (value.isEmpty) {
+                                return "This field can not be null";
                               } else {
                                 return null;
                               }
@@ -125,29 +128,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             obscureText: !viewPassword,
                             decoration: InputDecoration(
-                                label: const Text("Password"),
-                                prefixIcon: const Icon(
-                                  Icons.lock,
-                                  color: Color.fromARGB(127, 106, 106, 106),
-                                ),
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      viewPassword = !viewPassword;
-                                    });
-                                  },
-                                  child: Icon(
-                                      viewPassword
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: const Color.fromARGB(
-                                          127, 106, 106, 106)),
-                                )),
+                              label: const Text("Password"),
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                color: Color.fromARGB(127, 106, 106, 106),
+                              ),
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    viewPassword = !viewPassword;
+                                  });
+                                },
+                                child: Icon(
+                                    viewPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: const Color.fromARGB(
+                                        127, 106, 106, 106)),
+                              ),
+                            ),
                             validator: (value) {
                               RegExp regex = RegExp(
                                   r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
                               if (!regex.hasMatch(value!)) {
                                 return 'Password must be at least 8 characters, include uppercase, lowercase, number, and special character (!@#\$&*~)';
+                              } else if (value.isEmpty) {
+                                return "This field can not be null";
                               } else {
                                 return null;
                               }
@@ -216,23 +222,28 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          const SizedBox(
-                            width: double.infinity,
-                            child: Text.rich(
-                              TextSpan(
-                                  text: "Don't Have an account? ",
-                                  children: [
-                                    TextSpan(
-                                      text: "Create Account!",
-                                      style: TextStyle(
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  ],
-                                  style: TextStyle(
-                                      color:
-                                          Color.fromARGB(120, 126, 126, 126))),
+                          GestureDetector(
+                            onTap: () {
+                              GoRouter.of(context).go("/register");
+                            },
+                            child: const SizedBox(
+                              width: double.infinity,
+                              child: Text.rich(
+                                TextSpan(
+                                    text: "Don't Have an account? ",
+                                    children: [
+                                      TextSpan(
+                                        text: "Create Account!",
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 0, 0, 0),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    ],
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            120, 126, 126, 126))),
+                              ),
                             ),
                           )
                         ],

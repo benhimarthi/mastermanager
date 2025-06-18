@@ -51,6 +51,7 @@ dependencies:
   flutter_bloc: 
   go_router: 
   get_it: 
+  flutter_background_service: 
 
 
 dev_dependencies:

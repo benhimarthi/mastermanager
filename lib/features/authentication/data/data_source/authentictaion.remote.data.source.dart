@@ -27,7 +27,9 @@ class AuthenticationRemoteDataSrcImpl
   Future<UserModel> loginWithEmail(String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       final snapshot =
           await _firestore.collection('users').doc(credential.user!.uid).get();
       return UserModel.fromMap(snapshot.data()!);
@@ -61,7 +63,7 @@ class AuthenticationRemoteDataSrcImpl
 
       return snapshot.exists
           ? UserModel.fromMap(snapshot.data()!)
-          : UserModel.empty();
+          : const UserModel.empty();
     } catch (e) {
       throw ServerException(message: e.toString(), statusCode: 500);
     }
@@ -75,7 +77,15 @@ class AuthenticationRemoteDataSrcImpl
   @override
   Future<void> createUser(UserModel user) async {
     try {
-      await _firestore.collection('users').doc(user.id).set(user.toMap());
+      final UserCredential credential =
+          await _auth.createUserWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+      await _firestore
+          .collection('users')
+          .doc(credential.user!.uid)
+          .set(user.toMap());
     } catch (e) {
       throw ServerException(message: e.toString(), statusCode: 500);
     }
@@ -102,7 +112,14 @@ class AuthenticationRemoteDataSrcImpl
   @override
   Future<void> updateUser(UserModel user) async {
     try {
-      await _firestore.collection('users').doc(user.id).update(user.toMap());
+      var currentUser = await _firestore
+          .collection('users')
+          .where("email", isEqualTo: user.email)
+          .get();
+      if (currentUser.docs.isNotEmpty) {
+        var target = currentUser.docs.first.id;
+        await _firestore.collection("users").doc(target).update(user.toMap());
+      }
     } catch (e) {
       throw ServerException(message: e.toString(), statusCode: 500);
     }

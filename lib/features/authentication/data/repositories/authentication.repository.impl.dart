@@ -23,16 +23,16 @@ class AuthenticationRepositoryImplementation
   ResultVoid createUser({
     required String name,
     required String email,
-    required String avatar,
+    required String password,
     required UserRole role,
   }) async {
     final user = UserModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       createdAt: DateTime.now().toIso8601String(),
       name: name,
-      avatar: avatar,
+      avatar: "empty",
       email: email,
-      password: "",
+      password: password,
       role: role,
     );
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -47,6 +47,7 @@ class AuthenticationRepositoryImplementation
     try {
       await _remoteDataSource.createUser(user);
       await _localDataSource.cacheUser(user); // Sync to local storage
+
       return const Right(null);
     } on NetworkException catch (e) {
       await _localDataSource
@@ -91,20 +92,21 @@ class AuthenticationRepositoryImplementation
   @override
   ResultVoid updateUser(User user) async {
     final connectivityResult = await Connectivity().checkConnectivity();
-
     if (connectivityResult == ConnectivityResult.none) {
-      await _localDataSource.updateCachedUser(user as UserModel);
-      await _localDataSource.markUserAsUpdated(user); // Mark for later sync
+      await _localDataSource.updateCachedUser(UserModel.fromUser(user));
+      await _localDataSource
+          .markUserAsUpdated(UserModel.fromUser(user)); // Mark for later sync
       return const Right(null);
     }
 
     try {
       await _remoteDataSource
-          .updateUser(UserModel.fromMap(((user as UserModel).toMap())));
-      await _localDataSource.cacheUser(UserModel.fromMap(user.toMap()));
+          .updateUser(UserModel.fromMap(((UserModel.fromUser(user)).toMap())));
+      await _localDataSource
+          .cacheUser(UserModel.fromMap(UserModel.fromUser(user).toMap()));
       return const Right(null);
     } on NetworkException catch (_) {
-      await _localDataSource.markUserAsUpdated(user as UserModel);
+      await _localDataSource.markUserAsUpdated(UserModel.fromUser(user));
       return const Right(null);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
@@ -153,8 +155,10 @@ class AuthenticationRepositoryImplementation
   }
 
   @override
-  ResultFuture<User> loginWithEmail(
-      {required String email, required String password}) async {
+  ResultFuture<User> loginWithEmail({
+    required String email,
+    required String password,
+  }) async {
     try {
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {

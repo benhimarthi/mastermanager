@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mastermanager/features/authentication/data/data_source/sync.manager.dart';
 import 'package:mastermanager/features/authentication/domain/usecases/get.users.dart';
 
 import '../../features/authentication/data/data_source/authentication.local.data.source.dart';
@@ -16,6 +17,7 @@ import '../../features/authentication/domain/usecases/login.with.google.dart';
 import '../../features/authentication/domain/usecases/logout.user.dart';
 import '../../features/authentication/domain/usecases/update.user.dart';
 import '../../features/authentication/presentation/cubit/authentication.cubit.dart';
+import '../../features/authentication/synchronisation/cubit/sync.trigger.cubit.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -45,6 +47,16 @@ Future<void> setupDependencyInjection() async {
         getIt<AuthenticationRemoteDataSource>(),
         getIt<AuthenticationLocalDataSource>()),
   );
+
+  //Rgistration of the synchronisator
+  getIt.registerLazySingleton<SyncManager>(
+    () => SyncManager(
+      getIt<AuthenticationRemoteDataSource>(),
+      getIt<AuthenticationLocalDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<SyncTriggerCubit>(
+      () => SyncTriggerCubit(getIt<SyncManager>()));
 
   // Register Use Cases
   getIt.registerLazySingleton<CreateUser>(

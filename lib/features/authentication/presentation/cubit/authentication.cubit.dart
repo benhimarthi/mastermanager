@@ -75,14 +75,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> createUser({
     required String name,
     required String email,
-    required String avatar,
+    required String password,
     required UserRole role,
   }) async {
     emit(const AuthenticationLoading());
 
     final connectivityResult = await Connectivity().checkConnectivity();
     final result = await _createUser(
-      CreateUserParams(name: name, email: email, avatar: avatar, role: role),
+      CreateUserParams(
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+      ),
     );
 
     result.fold(

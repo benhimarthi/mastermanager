@@ -116,7 +116,7 @@ class AuthenticationLocalDataSrcImpl implements AuthenticationLocalDataSource {
         .get("updated_users", defaultValue: <List<Map<String, dynamic>>>[]);
     updatedUsers
         .removeWhere((u) => u["id"] == user.id); // Prevent duplicate entries
-    updatedUsers.add(user.toMap());
+    updatedUsers.add([user.toMap()]);
     await _hiveBox.put("updated_users", updatedUsers);
   }
 

@@ -7,11 +7,19 @@ import '../../data/data_source/sync.manager.dart';
 class SyncTriggerCubit extends Cubit<SyncTriggerState> {
   final SyncManager _syncManager;
   Timer? _syncTimer;
+  late final StreamSubscription<ConnectivityResult> _subscription;
 
-  SyncTriggerCubit(this._syncManager) : super(SyncInitial());
+  SyncTriggerCubit(this._syncManager) : super(SyncInitial()) {
+    _subscription = Connectivity().onConnectivityChanged.listen((result) {
+      if (result != ConnectivityResult.none) {
+        runOnAppStart();
+      }
+    });
+  }
 
   void startSyncing() {
     _syncTimer = Timer.periodic(const Duration(minutes: 10), (timer) async {
+      //print("TTTTTTTTTTTTTTTTGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
       emit(SyncInProgress()); // 🔄 Sync is happening
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult != ConnectivityResult.none) {
@@ -26,16 +34,13 @@ class SyncTriggerCubit extends Cubit<SyncTriggerState> {
   }
 
   void runOnAppStart() async {
+    print("XVVVVVVVVVVVVVVVVYUUUUUUUUUUUUUU");
     emit(SyncInProgress());
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult != ConnectivityResult.none) {
-      try {
-        await _syncManager.syncData();
-        emit(SyncSuccess());
-      } catch (e) {
-        emit(SyncFailure(e.toString()));
-      }
+    try {
+      await _syncManager.syncData();
+      emit(SyncSuccess());
+    } catch (e) {
+      emit(SyncFailure(e.toString()));
     }
   }
 

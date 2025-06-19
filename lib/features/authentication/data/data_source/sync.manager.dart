@@ -30,6 +30,7 @@ class SyncManager {
   }
 
   Future<void> _syncPendingUserUpdates() async {
+    print("XXXXXXXXXXXXXXMMMMMMMMMMMMNNNNNNNNN");
     try {
       final updatedUsers = await _localDataSource.getUpdatedUsers();
       print("Fetched updated users: $updatedUsers");

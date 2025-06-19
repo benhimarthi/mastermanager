@@ -27,7 +27,7 @@ class UserModel extends User {
     );
   }
 
-  UserModel.fromMap(Map<String, dynamic> map)
+  UserModel.fromMap(Map<dynamic, dynamic> map)
       : this(
           id: map['id'] as String,
           createdAt: map['createdAt'] as String,

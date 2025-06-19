@@ -148,10 +148,11 @@ class AuthenticationLocalDataSrcImpl implements AuthenticationLocalDataSource {
 
   @override
   Future<List<UserModel>> getUpdatedUsers() async {
-    final updatedUsers =
-        _hiveBox.get("updated_users", defaultValue: List<Map<String, dynamic>>);
-    var t = updatedUsers.map((data) => UserModel.fromMap(data)).toList();
-    return t;
+    final List<dynamic> rawList =
+        _hiveBox.get("updated_users", defaultValue: []) as List<dynamic>;
+    return rawList
+        .map((data) => UserModel.fromMap(Map<String, dynamic>.from(data)))
+        .toList();
   }
 
   @override

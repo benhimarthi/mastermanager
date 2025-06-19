@@ -21,7 +21,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setupDependencyInjection();
-
   final savedUser = SessionManager.getUserSession();
   await initializeBackgroundService();
 
@@ -49,12 +48,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Listen for connectivity changes
-    /*Connectivity().onConnectivityChanged.listen((connectivityResult) {
-      if (connectivityResult != ConnectivityResult.none) {
-        context.read<SyncTriggerCubit>().runOnAppStart();
-      }
-    });*/
     final syncTriggerCubit = GetIt.instance<SyncTriggerCubit>();
     syncTriggerCubit.runOnAppStart();
   }

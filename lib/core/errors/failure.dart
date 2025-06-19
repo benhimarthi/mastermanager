@@ -31,3 +31,17 @@ class ServerFailure extends Failure {
   const ServerFailure({required String message, required int statusCode})
       : super(message: message, statusCode: statusCode);
 }
+
+class LocalFailure extends Failure {
+  const LocalFailure({
+    required String message,
+    required int statusCode,
+  }) : super(
+          message: message,
+          statusCode: statusCode,
+        );
+  factory LocalFailure.fromLocalException(LocalException exc) => LocalFailure(
+        message: exc.message,
+        statusCode: exc.statusCode,
+      );
+}

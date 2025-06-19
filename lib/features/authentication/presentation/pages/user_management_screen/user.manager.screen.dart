@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mastermanager/core/session/session.manager.dart';
 
 import '../../../domain/entities/user.dart';
 import '../../cubit/authentication.cubit.dart';
 import '../../cubit/authentication.state.dart';
+import '../../widgets/edit.user.dialog.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -13,9 +15,11 @@ class UserManagementScreen extends StatefulWidget {
 }
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
+  late User currentUser;
   @override
   void initState() {
     super.initState();
+    currentUser = SessionManager.getUserSession()!;
     context.read<AuthenticationCubit>().fetchUsers();
   }
 
@@ -26,7 +30,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   void _onEditUser(User user) {
     showDialog(
       context: context,
-      builder: (context) => _EditUserDialog(user: user),
+      builder: (context) => EditUserDialog(user: user),
     );
   }
 
@@ -45,7 +49,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _onEditUser(currentUser);
+            },
             icon: const Icon(Icons.person),
           )
         ],
@@ -59,21 +65,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               itemCount: state.users.length,
               itemBuilder: (context, index) {
                 final user = state.users[index];
-                return ListTile(
-                  title: Text(user.name),
-                  subtitle: Text(user.email),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => _onEditUser(user)),
-                      IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _onDeleteUser(user.id)),
-                    ],
-                  ),
-                );
+                return user.id != currentUser.id
+                    ? ListTile(
+                        title: Text(user.name),
+                        subtitle: Text(user.email),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => _onEditUser(user)),
+                            IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => _onDeleteUser(user.id)),
+                          ],
+                        ),
+                      )
+                    : const SizedBox();
               },
             );
           } else if (state is AuthenticationError) {
@@ -83,85 +91,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           }
         },
       ),
-    );
-  }
-}
-
-class _EditUserDialog extends StatefulWidget {
-  const _EditUserDialog({required this.user});
-
-  final User user;
-
-  @override
-  State<_EditUserDialog> createState() => _EditUserDialogState();
-}
-
-class _EditUserDialogState extends State<_EditUserDialog> {
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _avatarController;
-  UserRole _selectedRole = UserRole.regular;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.user.name);
-    _emailController = TextEditingController(text: widget.user.email);
-    _avatarController = TextEditingController(text: widget.user.avatar);
-    _selectedRole = widget.user.role;
-  }
-
-  void _onUpdateUser() {
-    final updatedUser = User(
-      id: widget.user.id,
-      createdAt: widget.user.createdAt,
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: "",
-      avatar: _avatarController.text.trim(),
-      role: _selectedRole,
-    );
-
-    context.read<AuthenticationCubit>().updateUser(updatedUser);
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Edit User"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: "Name")),
-          TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "Email")),
-          TextField(
-              controller: _avatarController,
-              decoration: const InputDecoration(labelText: "Avatar URL")),
-          DropdownButton<UserRole>(
-            value: _selectedRole,
-            items: const [
-              DropdownMenuItem(
-                  value: UserRole.admin, child: Text("Administrator")),
-              DropdownMenuItem(
-                  value: UserRole.regular, child: Text("Regular User")),
-            ],
-            onChanged: (role) {
-              setState(() => _selectedRole = role!);
-            },
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel")),
-        ElevatedButton(onPressed: _onUpdateUser, child: const Text("Update")),
-      ],
     );
   }
 }

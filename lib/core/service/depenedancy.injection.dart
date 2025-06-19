@@ -4,6 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mastermanager/features/authentication/data/data_source/sync.manager.dart';
 import 'package:mastermanager/features/authentication/domain/usecases/get.users.dart';
+import 'package:mastermanager/features/product_category/data/data_sources/product.category.remote.data.source.dart';
+import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
+import 'package:mastermanager/features/synchronisation/synchronisation_manager/product.category.sync.manager.dart';
 
 import '../../features/authentication/data/data_source/authentication.local.data.source.dart';
 import '../../features/authentication/data/data_source/authentictaion.remote.data.source.dart';
@@ -17,7 +21,15 @@ import '../../features/authentication/domain/usecases/login.with.google.dart';
 import '../../features/authentication/domain/usecases/logout.user.dart';
 import '../../features/authentication/domain/usecases/update.user.dart';
 import '../../features/authentication/presentation/cubit/authentication.cubit.dart';
-import '../../features/authentication/synchronisation/cubit/sync.trigger.cubit.dart';
+import '../../features/product_category/data/data_sources/product.category.local.data.source.dart';
+import '../../features/product_category/data/repositories/product.category.repository.impl.dart';
+import '../../features/product_category/domain/repositories/product.category.repository.dart';
+import '../../features/product_category/domain/usecases/create.product.category.dart';
+import '../../features/product_category/domain/usecases/delete.product.category.dart';
+import '../../features/product_category/domain/usecases/get.all.product.categories.dart';
+import '../../features/product_category/domain/usecases/get.product.category.by.id.dart';
+import '../../features/product_category/domain/usecases/update.product.category.dart';
+import '../../features/synchronisation/cubit/authentication_synch_manager_cubit/sync.trigger.cubit.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -87,4 +99,50 @@ Future<void> setupDependencyInjection() async {
         logoutUser: getIt<LogoutUser>(),
         getCurrentUser: getIt<GetCurrentUser>(),
       ));
+
+  // Open Hive boxes
+  final mainBox = await Hive.openBox('product_categories');
+  final createdBox = await Hive.openBox('product_categories_created');
+  final updatedBox = await Hive.openBox('product_categories_updated');
+  final deletedBox = await Hive.openBox('product_categories_deleted');
+  // Local Data Source
+  getIt
+    ..registerFactory(() => LocalCategoryManagerCubit(
+          getAll: getIt(),
+          create: getIt(),
+          update: getIt(),
+          delete: getIt(),
+        ))
+    ..registerLazySingleton<ProductCategoryLocalDataSource>(
+      () => ProductCategoryLocalDataSourceImpl(
+        mainBox: mainBox,
+        createdBox: createdBox,
+        updatedBox: updatedBox,
+        deletedBox: deletedBox,
+      ),
+    )
+    ..registerLazySingleton<ProductCategoryRepository>(
+      () => ProductCategoryRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton(() => CreateProductCategory(getIt()))
+    ..registerLazySingleton(() => GetAllProductCategories(getIt()))
+    ..registerLazySingleton(() => GetProductCategoryById(getIt()))
+    ..registerLazySingleton(() => UpdateProductCategory(getIt()))
+    ..registerLazySingleton(() => DeleteProductCategory(getIt()));
+
+  getIt
+    ..registerFactory(() => ProductCategorySyncTriggerCubit(
+          getIt(),
+        ))
+    ..registerLazySingleton(
+      () => ProductCategorySyncManager(
+        getIt(),
+        getIt(),
+      ),
+    )
+    ..registerLazySingleton<ProductCategoryRemoteDataSource>(
+      () => ProductCategoryRemoteDataSourceImpl(
+        getIt(),
+      ),
+    );
 }

@@ -15,7 +15,7 @@ import 'features/authentication/presentation/pages/login_screen/login.screen.dar
 import 'features/authentication/presentation/pages/registration_screen/registration.screen.dart';
 import 'features/authentication/presentation/pages/splash_screen/splash.screen.dart';
 import 'features/authentication/presentation/pages/user_management_screen/user.manager.screen.dart';
-import 'features/authentication/synchronisation/cubit/sync.trigger.cubit.dart';
+import 'features/synchronisation/cubit/authentication_synch_manager_cubit/sync.trigger.cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

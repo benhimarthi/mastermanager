@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +8,7 @@ import 'package:mastermanager/features/authentication/domain/usecases/get.users.
 import 'package:mastermanager/features/product_category/data/data_sources/product.category.remote.data.source.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
-import 'package:mastermanager/features/synchronisation/synchronisation_manager/product.category.sync.manager.dart';
+import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/product.category.sync.manager.dart';
 
 import '../../features/authentication/data/data_source/authentication.local.data.source.dart';
 import '../../features/authentication/data/data_source/authentictaion.remote.data.source.dart';
@@ -42,6 +43,7 @@ Future<void> setupDependencyInjection() async {
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   getIt.registerLazySingleton<FirebaseFirestore>(
       () => FirebaseFirestore.instance);
+  getIt.registerLazySingleton<Connectivity>(() => Connectivity());
   getIt.registerLazySingleton<Box>(() => Hive.box('authenticationBox'));
 
   // Register Data Sources
@@ -112,7 +114,14 @@ Future<void> setupDependencyInjection() async {
           create: getIt(),
           update: getIt(),
           delete: getIt(),
+          connectivity: getIt(),
+          syncCubit: getIt(),
         ))
+    ..registerLazySingleton(() => CreateProductCategory(getIt()))
+    ..registerLazySingleton(() => GetAllProductCategories(getIt()))
+    ..registerLazySingleton(() => GetProductCategoryById(getIt()))
+    ..registerLazySingleton(() => UpdateProductCategory(getIt()))
+    ..registerLazySingleton(() => DeleteProductCategory(getIt()))
     ..registerLazySingleton<ProductCategoryLocalDataSource>(
       () => ProductCategoryLocalDataSourceImpl(
         mainBox: mainBox,
@@ -121,28 +130,19 @@ Future<void> setupDependencyInjection() async {
         deletedBox: deletedBox,
       ),
     )
-    ..registerLazySingleton<ProductCategoryRepository>(
-      () => ProductCategoryRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton(() => CreateProductCategory(getIt()))
-    ..registerLazySingleton(() => GetAllProductCategories(getIt()))
-    ..registerLazySingleton(() => GetProductCategoryById(getIt()))
-    ..registerLazySingleton(() => UpdateProductCategory(getIt()))
-    ..registerLazySingleton(() => DeleteProductCategory(getIt()));
-
-  getIt
-    ..registerFactory(() => ProductCategorySyncTriggerCubit(
-          getIt(),
-        ))
-    ..registerLazySingleton(
-      () => ProductCategorySyncManager(
-        getIt(),
-        getIt(),
-      ),
-    )
     ..registerLazySingleton<ProductCategoryRemoteDataSource>(
       () => ProductCategoryRemoteDataSourceImpl(
         getIt(),
       ),
+    )
+    ..registerLazySingleton<ProductCategoryRepository>(
+      () => ProductCategoryRepositoryImpl(getIt()),
     );
+
+  getIt
+    ..registerLazySingleton(() => ProductCategorySyncManager(
+          getIt<ProductCategoryLocalDataSource>(),
+          getIt<ProductCategoryRemoteDataSource>(),
+        ))
+    ..registerFactory(() => ProductCategorySyncTriggerCubit(getIt()));
 }

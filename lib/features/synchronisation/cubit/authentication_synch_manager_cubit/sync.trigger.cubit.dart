@@ -11,6 +11,7 @@ class SyncTriggerCubit extends Cubit<SyncTriggerState> {
   late final StreamSubscription<ConnectivityResult> _subscription;
 
   SyncTriggerCubit(this._syncManager) : super(SyncInitial()) {
+    startSyncing();
     _subscription = Connectivity().onConnectivityChanged.listen((result) {
       if (result != ConnectivityResult.none) {
         runOnAppStart();
@@ -19,7 +20,7 @@ class SyncTriggerCubit extends Cubit<SyncTriggerState> {
   }
 
   void startSyncing() {
-    _syncTimer = Timer.periodic(const Duration(minutes: 10), (timer) async {
+    _syncTimer = Timer.periodic(const Duration(seconds: 100), (timer) async {
       emit(SyncInProgress()); // 🔄 Sync is happening
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult != ConnectivityResult.none) {
@@ -46,5 +47,12 @@ class SyncTriggerCubit extends Cubit<SyncTriggerState> {
   void stopSyncing() {
     _syncTimer?.cancel();
     emit(SyncInitial());
+  }
+
+  @override
+  Future<void> close() {
+    stopSyncing();
+    _subscription.cancel();
+    return super.close();
   }
 }

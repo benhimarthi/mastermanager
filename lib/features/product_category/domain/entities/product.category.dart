@@ -6,18 +6,17 @@ class ProductCategory extends Equatable {
   final String? description;
   final String? parentId;
   final String? imageUrl;
-  final String? barcode;
+  final int? iconCodePoint;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
-
   const ProductCategory({
     required this.id,
     required this.name,
     this.description,
     this.parentId,
     this.imageUrl,
-    this.barcode,
+    this.iconCodePoint,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -30,7 +29,7 @@ class ProductCategory extends Equatable {
         description,
         parentId,
         imageUrl,
-        barcode,
+        iconCodePoint,
         isActive,
         createdAt,
         updatedAt,

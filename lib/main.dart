@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +5,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/service/depenedancy.injection.dart';
 import 'package:mastermanager/features/authentication/domain/entities/user.dart';
+import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
+import 'package:mastermanager/features/product_category/presentation/pages/product.category.page.dart';
+import 'package:mastermanager/features/product_category/presentation/widgets/category.form.page.dart';
+import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
 import 'package:mastermanager/firebase_options.dart';
 import 'background.service.dart';
 import 'core/session/session.manager.dart';
@@ -60,6 +63,10 @@ class _MyAppState extends State<MyApp> {
               create: (context) => getIt<AuthenticationCubit>()),
           BlocProvider<SyncTriggerCubit>(
               create: (context) => getIt<SyncTriggerCubit>()),
+          BlocProvider<LocalCategoryManagerCubit>(
+              create: (context) => getIt<LocalCategoryManagerCubit>()),
+          BlocProvider<ProductCategorySyncTriggerCubit>(
+              create: (context) => getIt<ProductCategorySyncTriggerCubit>()),
         ],
         child: Builder(builder: ((context) {
           return MaterialApp.router(
@@ -81,6 +88,9 @@ class _MyAppState extends State<MyApp> {
                 GoRoute(
                     path: '/users',
                     builder: (context, state) => const UserManagementScreen()),
+                GoRoute(
+                    path: '/categories',
+                    builder: (context, state) => const ProductCategoryPage()),
               ],
             ),
           );

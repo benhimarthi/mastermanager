@@ -1,19 +1,19 @@
 import 'package:equatable/equatable.dart';
 
-abstract class SyncTriggerState extends Equatable {
-  const SyncTriggerState();
+abstract class ProductCategorySyncTriggerState extends Equatable {
+  const ProductCategorySyncTriggerState();
 
   @override
   List<Object?> get props => [];
 }
 
-class SyncInitial extends SyncTriggerState {}
+class SyncInitial extends ProductCategorySyncTriggerState {}
 
-class SyncInProgress extends SyncTriggerState {}
+class SyncInProgress extends ProductCategorySyncTriggerState {}
 
-class SyncSuccess extends SyncTriggerState {}
+class SyncSuccess extends ProductCategorySyncTriggerState {}
 
-class SyncFailure extends SyncTriggerState {
+class SyncFailure extends ProductCategorySyncTriggerState {
   final String message;
 
   const SyncFailure(this.message);

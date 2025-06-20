@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/session/session.manager.dart';
+import 'package:mastermanager/features/product_category/domain/entities/product.category.dart';
+import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
 
+import '../../../../product_category/presentation/cubit/local.category.manager.state.dart';
 import '../../../domain/entities/user.dart';
 import '../../cubit/authentication.cubit.dart';
 import '../../cubit/authentication.state.dart';
@@ -16,11 +21,13 @@ class UserManagementScreen extends StatefulWidget {
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   late User currentUser;
+  late ProductCategory myCategoris;
   @override
   void initState() {
     super.initState();
     currentUser = SessionManager.getUserSession()!;
     context.read<AuthenticationCubit>().fetchUsers();
+    context.read<LocalCategoryManagerCubit>().loadCategories();
   }
 
   void _onDeleteUser(String userId) {
@@ -56,6 +63,22 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           )
         ],
       ),
+      floatingActionButton: GestureDetector(
+        onTap: () {
+          setState(() {
+            context.read<LocalCategoryManagerCubit>().addCategory(
+                  ProductCategory(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    name: "Electrinics",
+                    isActive: true,
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  ),
+                );
+          });
+        },
+        child: CircleAvatar(),
+      ),
       body: BlocBuilder<AuthenticationCubit, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthenticationLoading) {
@@ -81,7 +104,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           ],
                         ),
                       )
-                    : const SizedBox();
+                    : SizedBox(
+                        child: Column(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  /*Navigator.pushReplacementNamed(
+                                      context, "/categories");*/
+                                  GoRouter.of(context).go("/categories");
+                                },
+                                icon: const Icon(Icons.category))
+                          ],
+                        ),
+                      );
               },
             );
           } else if (state is AuthenticationError) {

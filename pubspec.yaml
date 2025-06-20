@@ -52,6 +52,7 @@ dependencies:
   go_router: 
   get_it: 
   flutter_background_service: 
+  uuid: 
 
 
 dev_dependencies:

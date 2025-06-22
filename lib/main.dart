@@ -7,10 +7,10 @@ import 'package:mastermanager/core/service/depenedancy.injection.dart';
 import 'package:mastermanager/features/authentication/domain/entities/user.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
 import 'package:mastermanager/features/product_category/presentation/pages/product.category.page.dart';
-import 'package:mastermanager/features/product_category/presentation/widgets/category.form.page.dart';
+import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/product_pricing_sync_manager_cubit/product.pricing.sync.trigger.cubit.dart';
 import 'package:mastermanager/firebase_options.dart';
-import 'background.service.dart';
 import 'core/session/session.manager.dart';
 import 'core/app_theme/app.theme.dart';
 import 'features/authentication/presentation/cubit/authentication.cubit.dart';
@@ -25,7 +25,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setupDependencyInjection();
   final savedUser = SessionManager.getUserSession();
-  await initializeBackgroundService();
 
   runApp(
     MyApp(
@@ -67,6 +66,10 @@ class _MyAppState extends State<MyApp> {
               create: (context) => getIt<LocalCategoryManagerCubit>()),
           BlocProvider<ProductCategorySyncTriggerCubit>(
               create: (context) => getIt<ProductCategorySyncTriggerCubit>()),
+          BlocProvider<ProductPricingCubit>(
+              create: (context) => getIt<ProductPricingCubit>()),
+          BlocProvider<ProductPricingSyncTriggerCubit>(
+              create: (context) => getIt<ProductPricingSyncTriggerCubit>()),
         ],
         child: Builder(builder: ((context) {
           return MaterialApp.router(

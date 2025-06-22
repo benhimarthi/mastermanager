@@ -50,8 +50,7 @@ dependencies:
   google_sign_in: 
   flutter_bloc: 
   go_router: 
-  get_it: 
-  flutter_background_service: 
+  get_it:
   uuid: 
 
 

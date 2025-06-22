@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/session/session.manager.dart';
+import 'package:mastermanager/core/util/change.screen.manager.dart';
 import 'package:mastermanager/features/product_category/domain/entities/product.category.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
+import 'package:mastermanager/features/product_pricing/presentation/pages/product.pricing.page.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
 
 import '../../../../product_category/presentation/cubit/local.category.manager.state.dart';
@@ -113,7 +115,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                       context, "/categories");*/
                                   GoRouter.of(context).go("/categories");
                                 },
-                                icon: const Icon(Icons.category))
+                                icon: const Icon(Icons.category)),
+                            IconButton(
+                                onPressed: () {
+                                  /*Navigator.pushReplacementNamed(
+                                      context, "/categories");*/
+                                  nextScreen(
+                                      context, const ProductPricingPage());
+                                },
+                                icon: const Icon(Icons.price_change))
                           ],
                         ),
                       );

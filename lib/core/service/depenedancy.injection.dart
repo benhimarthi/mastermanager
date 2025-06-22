@@ -7,8 +7,20 @@ import 'package:mastermanager/features/authentication/data/data_source/sync.mana
 import 'package:mastermanager/features/authentication/domain/usecases/get.users.dart';
 import 'package:mastermanager/features/product_category/data/data_sources/product.category.remote.data.source.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
+import 'package:mastermanager/features/product_pricing/data/data_source/product.pricing.local.data.source.dart';
+import 'package:mastermanager/features/product_pricing/data/data_source/product.pricing.remote.data.source.dart';
+import 'package:mastermanager/features/product_pricing/data/repositories/product.pricing.repository.impl.dart';
+import 'package:mastermanager/features/product_pricing/domain/repositories/product.pricing.repository.dart';
+import 'package:mastermanager/features/product_pricing/domain/usecases/create.product.pricing.dart';
+import 'package:mastermanager/features/product_pricing/domain/usecases/delete.product.pricing.dart';
+import 'package:mastermanager/features/product_pricing/domain/usecases/get.all.product.pricing.dart';
+import 'package:mastermanager/features/product_pricing/domain/usecases/update.product.pricing.dart';
+import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/product_pricing_sync_manager_cubit/product.pricing.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/product.category.sync.manager.dart';
+import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/product.pricing.sync.manager.dart';
+import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/refresh.categories.from.remote.dart';
 
 import '../../features/authentication/data/data_source/authentication.local.data.source.dart';
 import '../../features/authentication/data/data_source/authentictaion.remote.data.source.dart';
@@ -145,4 +157,58 @@ Future<void> setupDependencyInjection() async {
           getIt<ProductCategoryRemoteDataSource>(),
         ))
     ..registerFactory(() => ProductCategorySyncTriggerCubit(getIt()));
+
+  getIt.registerLazySingleton(
+    () => RefreshCategoriesFromRemote(
+      getIt(),
+      getIt(),
+    ),
+  );
+
+  final ppm = await Hive.openBox('product_pricing_main');
+  final ppc = await Hive.openBox('product_pricing_created');
+  final ppu = await Hive.openBox('product_pricing_updated');
+  final ppd = await Hive.openBox<String>('product_pricing_deleted');
+
+  getIt
+    ..registerFactory(
+      () => ProductPricingCubit(
+        getAll: getIt(),
+        create: getIt(),
+        update: getIt(),
+        delete: getIt(),
+        syncCubit: getIt(),
+        connectivity: getIt(),
+      ),
+    )
+    ..registerLazySingleton(() => GetAllProductPricing(getIt()))
+    ..registerLazySingleton(() => CreateProductPricing(getIt()))
+    ..registerLazySingleton(() => UpdateProductPricing(getIt()))
+    ..registerLazySingleton(() => DeleteProductPricing(getIt()))
+    ..registerLazySingleton(() => ProductPricingSyncTriggerCubit(getIt()))
+    ..registerLazySingleton<ProductPricingRepository>(
+      () => ProductPricingRepositoryImpl(
+        local: getIt(),
+        remote: getIt(),
+      ),
+    )
+    ..registerLazySingleton<ProductPricingLocalDataSource>(
+      () => ProductPricingLocalDataSourceImpl(
+        mainBox: ppm,
+        createdBox: ppc,
+        updatedBox: ppu,
+        deletedBox: ppd,
+      ),
+    )
+    ..registerLazySingleton<ProductPricingRemoteDataSource>(
+      () => ProductPricingRemoteDataSourceImpl(
+        getIt(),
+      ),
+    )
+    ..registerLazySingleton<ProductPricingSyncManager>(
+      () => ProductPricingSyncManagerImpl(
+        getIt(),
+        getIt(),
+      ),
+    );
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/service/depenedancy.injection.dart';
+import '../../../../synchronisation/product_category_synchronisation_manager/refresh.categories.from.remote.dart';
 import '../../cubit/authentication.cubit.dart';
 import '../../cubit/authentication.state.dart';
 import '../synchronisation/sync.banner.dart';
@@ -66,17 +68,19 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: BlocConsumer<AuthenticationCubit, AuthenticationState>(
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is AuthenticationError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.message)),
                 );
               } else if (state is UserAuthenticated) {
+                await getIt<RefreshCategoriesFromRemote>()();
                 Navigator.pushReplacementNamed(context, "/users");
               } else if (state is AuthenticationOfflinePending) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text("You're offline. Login pending sync.")),
+                    content: Text("You're offline. Login pending sync."),
+                  ),
                 );
               }
             },

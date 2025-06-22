@@ -22,6 +22,7 @@ abstract class ProductCategoryLocalDataSource {
   Future<void> clearSyncedCreations();
   Future<void> clearSyncedUpdates();
   Future<void> removeSyncedDeletion(String id);
+  Future<void> clearAll();
 }
 
 class ProductCategoryLocalDataSourceImpl
@@ -193,5 +194,13 @@ class ProductCategoryLocalDataSourceImpl
       throw const LocalException(
           message: 'Failed to remove deleted ID from queue', statusCode: 500);
     }
+  }
+
+  @override
+  Future<void> clearAll() async {
+    await _mainBox.clear();
+    await _createdBox.clear();
+    await _updatedBox.clear();
+    await _deletedBox.clear();
   }
 }

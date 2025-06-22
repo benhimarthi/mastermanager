@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/errors/custom.exception.dart';
+import '../../../../core/session/session.manager.dart';
 import '../models/product.category.model.dart';
 
 abstract class ProductCategoryRemoteDataSource {
@@ -24,7 +25,10 @@ class ProductCategoryRemoteDataSourceImpl
   Future<ProductCategoryModel> createCategory(
       ProductCategoryModel category) async {
     try {
-      await _collection.doc(category.id).set(category.toMap());
+      String userUid = SessionManager.getUserSession()!.id;
+      await _collection
+          .doc(category.id)
+          .set(category.toMap()..addAll({'creatorId': userUid}));
       return category;
     } catch (e) {
       throw const ServerException(
@@ -35,7 +39,9 @@ class ProductCategoryRemoteDataSourceImpl
   @override
   Future<List<ProductCategoryModel>> getAllCategories() async {
     try {
-      final snapshot = await _collection.get();
+      String userUid = SessionManager.getUserSession()!.id;
+      final snapshot =
+          await _collection.where('creatorId', isEqualTo: userUid).get();
       return snapshot.docs
           .map((doc) =>
               ProductCategoryModel.fromMap(doc.data() as Map<String, dynamic>))

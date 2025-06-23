@@ -5,11 +5,13 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/service/depenedancy.injection.dart';
 import 'package:mastermanager/features/authentication/domain/entities/user.dart';
+import 'package:mastermanager/features/product/presentation/cubit/product.cubit.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
 import 'package:mastermanager/features/product_category/presentation/pages/product.category.page.dart';
 import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_pricing_sync_manager_cubit/product.pricing.sync.trigger.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/product_sync_manager_cubit/product.sync.trigger.cubit.dart';
 import 'package:mastermanager/firebase_options.dart';
 import 'core/session/session.manager.dart';
 import 'core/app_theme/app.theme.dart';
@@ -70,6 +72,10 @@ class _MyAppState extends State<MyApp> {
               create: (context) => getIt<ProductPricingCubit>()),
           BlocProvider<ProductPricingSyncTriggerCubit>(
               create: (context) => getIt<ProductPricingSyncTriggerCubit>()),
+          BlocProvider<ProductCubit>(
+              create: (context) => getIt<ProductCubit>()),
+          BlocProvider<ProductSyncTriggerCubit>(
+              create: (context) => getIt<ProductSyncTriggerCubit>()),
         ],
         child: Builder(builder: ((context) {
           return MaterialApp.router(

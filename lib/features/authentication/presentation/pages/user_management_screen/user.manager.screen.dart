@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/session/session.manager.dart';
 import 'package:mastermanager/core/util/change.screen.manager.dart';
+import 'package:mastermanager/features/product/presentation/pages/product.page.dart';
 import 'package:mastermanager/features/product_category/domain/entities/product.category.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
 import 'package:mastermanager/features/product_pricing/presentation/pages/product.pricing.page.dart';
@@ -108,22 +109,25 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       )
                     : SizedBox(
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  /*Navigator.pushReplacementNamed(
-                                      context, "/categories");*/
                                   GoRouter.of(context).go("/categories");
                                 },
                                 icon: const Icon(Icons.category)),
                             IconButton(
                                 onPressed: () {
-                                  /*Navigator.pushReplacementNamed(
-                                      context, "/categories");*/
                                   nextScreen(
                                       context, const ProductPricingPage());
                                 },
-                                icon: const Icon(Icons.price_change))
+                                icon: const Icon(Icons.price_change)),
+                            IconButton(
+                                onPressed: () {
+                                  nextScreen(context, const ProductPage());
+                                },
+                                icon: const Icon(
+                                    Icons.production_quantity_limits_rounded))
                           ],
                         ),
                       );

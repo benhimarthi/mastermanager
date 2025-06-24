@@ -5,18 +5,14 @@ import '../../../../core/util/typedef.dart';
 import '../../domain/entities/product.pricing.dart';
 import '../../domain/repositories/product.pricing.repository.dart';
 import '../data_source/product.pricing.local.data.source.dart';
-import '../data_source/product.pricing.remote.data.source.dart';
 import '../models/product.pricing.model.dart';
 
 class ProductPricingRepositoryImpl implements ProductPricingRepository {
   final ProductPricingLocalDataSource _local;
-  final ProductPricingRemoteDataSource _remote;
 
   ProductPricingRepositoryImpl({
     required ProductPricingLocalDataSource local,
-    required ProductPricingRemoteDataSource remote,
-  })  : _local = local,
-        _remote = remote;
+  }) : _local = local;
 
   @override
   ResultFuture<void> createPricing(ProductPricing pricing) async {

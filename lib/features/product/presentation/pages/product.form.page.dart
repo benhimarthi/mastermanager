@@ -1,5 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
+import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.state.dart';
+import 'package:mastermanager/features/product_pricing/domain/entities/product.pricing.dart';
+import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.cubit.dart';
+import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.state.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/product.dart';
@@ -25,6 +31,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
   late TextEditingController _imageUrl;
   late TextEditingController _pricingId;
   bool _active = true;
+  String? _selectedCategoryId;
+  String? _selectedPricingId;
+  late List<Category> categories;
+  late List<ProductPricing> pricing;
 
   @override
   void initState() {
@@ -38,6 +48,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
     _imageUrl = TextEditingController(text: product?.imageUrl ?? '');
     _pricingId = TextEditingController(text: product?.pricingId ?? '');
     _active = product?.active ?? true;
+    context.read<ProductPricingCubit>().loadPricing();
+    context.read<LocalCategoryManagerCubit>().loadCategories();
   }
 
   @override
@@ -103,9 +115,28 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 controller: _description,
                 decoration: const InputDecoration(labelText: 'Description'),
               ),
-              TextFormField(
-                controller: _categoryId,
-                decoration: const InputDecoration(labelText: 'Category ID'),
+              BlocConsumer<LocalCategoryManagerCubit,
+                  LocalCategoryManagerState>(
+                listener: (context, state) {},
+                builder: (context, state) {
+                  return state is LocalCategoryManagerLoaded
+                      ? DropdownButtonFormField<String>(
+                          value: _selectedCategoryId,
+                          decoration:
+                              const InputDecoration(labelText: 'Category'),
+                          items: state.categories.map((c) {
+                            return DropdownMenuItem(
+                              value: c.id,
+                              child: Text(c.name),
+                            );
+                          }).toList(),
+                          onChanged: (val) =>
+                              setState(() => _selectedCategoryId = val),
+                          validator: (val) =>
+                              val == null ? 'Select a category' : null,
+                        )
+                      : const SizedBox();
+                },
               ),
               TextFormField(
                 controller: _unit,
@@ -120,9 +151,28 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 controller: _imageUrl,
                 decoration: const InputDecoration(labelText: 'Image URL'),
               ),
-              TextFormField(
-                controller: _pricingId,
-                decoration: const InputDecoration(labelText: 'Pricing ID'),
+              BlocConsumer<ProductPricingCubit, ProductPricingState>(
+                listener: (context, state) {},
+                builder: (context, state) {
+                  return state is ProductPricingManagerLoaded
+                      ? DropdownButtonFormField<String>(
+                          value: _selectedPricingId,
+                          decoration:
+                              const InputDecoration(labelText: 'Pricing Tier'),
+                          items: state.pricingList
+                              .map((p) => DropdownMenuItem(
+                                    value: p.id,
+                                    child: Text(
+                                        '${p.country} - ${p.amount.toStringAsFixed(2)}'),
+                                  ))
+                              .toList(),
+                          onChanged: (val) =>
+                              setState(() => _selectedPricingId = val),
+                          validator: (val) =>
+                              val == null ? 'Choose a pricing option' : null,
+                        )
+                      : const SizedBox();
+                },
               ),
               SwitchListTile(
                 title: const Text('Active'),

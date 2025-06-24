@@ -4,8 +4,19 @@ import 'package:mastermanager/features/product/presentation/pages/product.form.p
 import '../cubit/product.cubit.dart';
 import '../cubit/product.state.dart';
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
+
+  @override
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductCubit>().loadProducts();
+  }
 
   @override
   Widget build(BuildContext context) {

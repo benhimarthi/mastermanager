@@ -200,7 +200,6 @@ Future<void> setupDependencyInjection() async {
     ..registerLazySingleton<ProductPricingRepository>(
       () => ProductPricingRepositoryImpl(
         local: getIt(),
-        remote: getIt(),
       ),
     )
     ..registerLazySingleton<ProductPricingLocalDataSource>(

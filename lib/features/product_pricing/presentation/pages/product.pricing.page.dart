@@ -5,8 +5,18 @@ import '../cubit/product.pricing.cubit.dart';
 import '../cubit/product.pricing.state.dart';
 import '../widgets/product.pricing.form.page.dart';
 
-class ProductPricingPage extends StatelessWidget {
+class ProductPricingPage extends StatefulWidget {
   const ProductPricingPage({super.key});
+
+  @override
+  State<ProductPricingPage> createState() => _ProductPricingPageState();
+}
+
+class _ProductPricingPageState extends State<ProductPricingPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

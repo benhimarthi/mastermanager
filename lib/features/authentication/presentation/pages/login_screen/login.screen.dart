@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mastermanager/core/util/change.screen.manager.dart';
+import 'package:mastermanager/features/authentication/presentation/pages/user_management_screen/user.manager.screen.dart';
 import '../../../../../core/service/depenedancy.injection.dart';
 import '../../../../synchronisation/product_category_synchronisation_manager/refresh.categories.from.remote.dart';
 import '../../cubit/authentication.cubit.dart';
@@ -75,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 );
               } else if (state is UserAuthenticated) {
                 await getIt<RefreshCategoriesFromRemote>()();
-                Navigator.pushReplacementNamed(context, "/users");
+                nextScreen(context, UserManagementScreen());
               } else if (state is AuthenticationOfflinePending) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

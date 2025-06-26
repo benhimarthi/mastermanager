@@ -3,13 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/session/session.manager.dart';
 import 'package:mastermanager/core/util/change.screen.manager.dart';
+import 'package:mastermanager/features/Inventory/presentation/pages/inventory.list.screen.dart';
 import 'package:mastermanager/features/product/presentation/pages/product.page.dart';
 import 'package:mastermanager/features/product_category/domain/entities/product.category.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
 import 'package:mastermanager/features/product_pricing/presentation/pages/product.pricing.page.dart';
-import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
-
-import '../../../../product_category/presentation/cubit/local.category.manager.state.dart';
 import '../../../domain/entities/user.dart';
 import '../../cubit/authentication.cubit.dart';
 import '../../cubit/authentication.state.dart';
@@ -66,22 +64,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           )
         ],
       ),
-      floatingActionButton: GestureDetector(
-        onTap: () {
-          setState(() {
-            context.read<LocalCategoryManagerCubit>().addCategory(
-                  ProductCategory(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    name: "Electrinics",
-                    isActive: true,
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  ),
-                );
-          });
-        },
-        child: CircleAvatar(),
-      ),
       body: BlocBuilder<AuthenticationCubit, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthenticationLoading) {
@@ -127,7 +109,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                   nextScreen(context, const ProductPage());
                                 },
                                 icon: const Icon(
-                                    Icons.production_quantity_limits_rounded))
+                                    Icons.production_quantity_limits_rounded)),
+                            IconButton(
+                                onPressed: () {
+                                  nextScreen(
+                                      context, const InventoryListScreen());
+                                },
+                                icon: const Icon(Icons.inventory))
                           ],
                         ),
                       );

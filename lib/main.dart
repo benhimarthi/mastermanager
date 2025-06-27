@@ -10,6 +10,8 @@ import 'package:mastermanager/features/product/presentation/cubit/product.cubit.
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
 import 'package:mastermanager/features/product_category/presentation/pages/product.category.page.dart';
 import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/inventory_meta_data_cubit/inventory.meta.data.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/inventory_meta_data_sync_trigger_cubit/inventory.meta.data.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/inventory_sync_trigger_cubit/inventory.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_pricing_sync_manager_cubit/product.pricing.sync.trigger.cubit.dart';
@@ -82,7 +84,13 @@ class _MyAppState extends State<MyApp> {
               create: (context) => getIt<InventoryCubit>()),
           BlocProvider<InventorySyncTriggerCubit>(
             create: (context) => getIt<InventorySyncTriggerCubit>(),
-          )
+          ),
+          BlocProvider<InventoryMetadataCubit>(
+            create: (context) => getIt<InventoryMetadataCubit>(),
+          ),
+          BlocProvider<InventoryMetadataSyncTriggerCubit>(
+            create: (context) => getIt<InventoryMetadataSyncTriggerCubit>(),
+          ),
         ],
         child: Builder(builder: ((context) {
           return MaterialApp.router(

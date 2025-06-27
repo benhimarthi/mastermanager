@@ -14,6 +14,14 @@ import 'package:mastermanager/features/Inventory/domain/usecases/update.inventor
 import 'package:mastermanager/features/Inventory/presentation/cubit/inventory.cubit.dart';
 import 'package:mastermanager/features/authentication/data/data_source/sync.manager.dart';
 import 'package:mastermanager/features/authentication/domain/usecases/get.users.dart';
+import 'package:mastermanager/features/inventory_meta_data/data/data_source/inventory.meta.data.local.data.source.dart';
+import 'package:mastermanager/features/inventory_meta_data/data/data_source/inventory.meta.data.remote.data.source.dart';
+import 'package:mastermanager/features/inventory_meta_data/data/repositories/inventory.meta.data.repository.impl.dart';
+import 'package:mastermanager/features/inventory_meta_data/domain/repositories/inventory.meta.data.repository.dart';
+import 'package:mastermanager/features/inventory_meta_data/domain/usecases/create.inventory.meta.data.dart';
+import 'package:mastermanager/features/inventory_meta_data/domain/usecases/delete.inventory.meta.data.dart';
+import 'package:mastermanager/features/inventory_meta_data/domain/usecases/get.all.inventory.meta.data.data.dart';
+import 'package:mastermanager/features/inventory_meta_data/domain/usecases/update.inventory.meta.data.dart';
 import 'package:mastermanager/features/product/data/data_sources/product.local.data.source.dart';
 import 'package:mastermanager/features/product/data/data_sources/product.remote.data.source.dart';
 import 'package:mastermanager/features/product/data/repositories/product.repository.impl.dart';
@@ -33,10 +41,13 @@ import 'package:mastermanager/features/product_pricing/domain/usecases/delete.pr
 import 'package:mastermanager/features/product_pricing/domain/usecases/get.all.product.pricing.dart';
 import 'package:mastermanager/features/product_pricing/domain/usecases/update.product.pricing.dart';
 import 'package:mastermanager/features/product_pricing/presentation/cubit/product.pricing.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/inventory_meta_data_cubit/inventory.meta.data.cubit.dart';
+import 'package:mastermanager/features/synchronisation/cubit/inventory_meta_data_sync_trigger_cubit/inventory.meta.data.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/inventory_sync_trigger_cubit/inventory.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_category_sync_manager_cubit/product.category.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_pricing_sync_manager_cubit/product.pricing.sync.trigger.cubit.dart';
 import 'package:mastermanager/features/synchronisation/cubit/product_sync_manager_cubit/product.sync.trigger.cubit.dart';
+import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/inventory.meta.data.sync.manager.dart';
 import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/inventory.sync.manager.dart';
 import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/product.category.sync.manager.dart';
 import 'package:mastermanager/features/synchronisation/product_category_synchronisation_manager/product.pricing.sync.manager.dart';
@@ -306,6 +317,48 @@ Future<void> setupDependencyInjection() async {
         () => InventoryRemoteDataSourceImpl(getIt()))
     ..registerLazySingleton<InventorySyncManager>(
       () => InventorySyncManagerImpl(
+        getIt(),
+        getIt(),
+      ),
+    );
+
+  final inventoryMetadataBox = await Hive.openBox('inventoryMetadata');
+  final createdInventoryMetadataBox =
+      await Hive.openBox('inventoryMetadata_created');
+  final updatedInventoryMetadataBox =
+      await Hive.openBox('inventoryMetadata_updated');
+  final deletedInventoryMetadataBox =
+      await Hive.openBox<String>('inventoryMetadata_deleted');
+  getIt
+    ..registerFactory(
+      () => InventoryMetadataCubit(
+        getAll: getIt(),
+        create: getIt(),
+        update: getIt(),
+        delete: getIt(),
+        syncCubit: getIt(),
+        connectivity: getIt(),
+      ),
+    )
+    ..registerLazySingleton(() => GetAllInventoryMetadata(getIt()))
+    ..registerLazySingleton(() => CreateInventoryMetadata(getIt()))
+    ..registerLazySingleton(() => UpdateInventoryMetadata(getIt()))
+    ..registerLazySingleton(() => DeleteInventoryMetadata(getIt()))
+    ..registerLazySingleton(() => InventoryMetadataSyncTriggerCubit(getIt()))
+    ..registerLazySingleton<InventoryMetadataRepository>(
+        () => InventoryMetadataRepositoryImpl(local: getIt()))
+    ..registerLazySingleton<InventoryMetadataLocalDataSource>(
+      () => InventoryMetadataLocalDataSourceImpl(
+        mainBox: inventoryMetadataBox,
+        createdBox: createdInventoryMetadataBox,
+        updatedBox: updatedInventoryMetadataBox,
+        deletedBox: deletedInventoryMetadataBox,
+      ),
+    )
+    ..registerLazySingleton<InventoryMetadataRemoteDataSource>(
+        () => InventoryMetadataRemoteDataSourceImpl(getIt()))
+    ..registerLazySingleton<InventoryMetadataSyncManager>(
+      () => InventoryMetadataSyncManagerImpl(
         getIt(),
         getIt(),
       ),

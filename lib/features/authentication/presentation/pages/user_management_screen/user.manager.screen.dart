@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/session/session.manager.dart';
 import 'package:mastermanager/core/util/change.screen.manager.dart';
 import 'package:mastermanager/features/Inventory/presentation/pages/inventory.list.screen.dart';
+import 'package:mastermanager/features/authentication/presentation/pages/user_management_screen/user.profile.dart';
 import 'package:mastermanager/features/product/presentation/pages/product.page.dart';
 import 'package:mastermanager/features/product_category/domain/entities/product.category.dart';
 import 'package:mastermanager/features/product_category/presentation/cubit/local.category.manager.cubit.dart';
@@ -23,6 +24,10 @@ class UserManagementScreen extends StatefulWidget {
 class _UserManagementScreenState extends State<UserManagementScreen> {
   late User currentUser;
   late ProductCategory myCategoris;
+  bool _isMoved = false;
+  final double initialSelectorPosition = 0;
+  late double targetPosition = 0;
+
   @override
   void initState() {
     super.initState();
@@ -42,91 +47,259 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
+  selectedOption() {
+    return Container(
+      color: const Color.fromARGB(255, 27, 29, 31),
+      height: 120,
+      width: 45,
+      child: Align(
+        alignment: Alignment.center,
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 30,
+                height: 118,
+                color: Colors.black,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 60,
+                height: 100,
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                child: const RotatedBox(
+                  quarterTurns: -1, // Rotates 90° counter-clockwise
+                  child: Text(
+                    'Home',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                width: 60,
+                height: 10,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 27, 29, 31),
+                  borderRadius:
+                      BorderRadius.only(bottomLeft: Radius.circular(60)),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                width: 60,
+                height: 10,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 27, 29, 31),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(60)),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
+      body: Container(
+        color: Colors.white,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.home),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  color: const Color.fromARGB(255, 27, 29, 31),
+                  height: double.infinity,
+                  width: MediaQuery.of(context).size.width * .2,
+                ),
+                Container(
+                  color: const Color.fromARGB(255, 27, 29, 31),
+                  height: double.infinity,
+                  width: MediaQuery.of(context).size.width * .2,
+                )
+              ],
             ),
-            const Text("User Management"),
+            Align(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    color: Colors.black,
+                    width: MediaQuery.of(context).size.width * .88,
+                    height: double.infinity,
+                  ),
+                  SizedBox(
+                    width: 49,
+                    height: double.infinity,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          height: 100,
+                          width: 35,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Icon(
+                                Icons.person,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              Icon(
+                                Icons.notifications,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        RotatedBox(
+                            quarterTurns: -1, // Rotates 90° counter-clockwise
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  //_isMoved = !_isMoved;
+                                  targetPosition = 0;
+                                });
+                              },
+                              child: const Text(
+                                'Home',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            )),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        RotatedBox(
+                            quarterTurns: -1, // Rotates 90° counter-clockwise
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  setState(() {
+                                    targetPosition = 118;
+                                    //_isMoved = !_isMoved;
+                                  });
+                                });
+                              },
+                              child: const Text(
+                                'My finances',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            )),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        RotatedBox(
+                            quarterTurns: -1, // Rotates 90° counter-clockwise
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  targetPosition = 118 * 2;
+                                  _isMoved = false; //_isMoved;
+                                });
+                              },
+                              child: const Text(
+                                'My Stats',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            )),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Align(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    //color: const Color.fromARGB(255, 188, 114, 114),
+                    width: MediaQuery.of(context).size.width * .88,
+                    height: double.infinity,
+                  ),
+                  SizedBox(
+                    width: 49,
+                    height: double.infinity,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const SizedBox(
+                          height: 100,
+                          width: 35,
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          //color: Color.fromARGB(68, 255, 193, 7),
+                          height: 500,
+                          width: 55,
+                          child: Stack(
+                            children: [
+                              AnimatedPositioned(
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeInOut,
+                                top: _isMoved
+                                    ? initialSelectorPosition
+                                    : targetPosition,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      //_isMoved = !_isMoved;
+                                    });
+                                  },
+                                  child: selectedOption(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                color: const Color.fromARGB(255, 0, 0, 0),
+                width: MediaQuery.of(context).size.width * .89,
+              ),
+            ),
           ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _onEditUser(currentUser);
-            },
-            icon: const Icon(Icons.person),
-          )
-        ],
-      ),
-      body: BlocBuilder<AuthenticationCubit, AuthenticationState>(
-        builder: (context, state) {
-          if (state is AuthenticationLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is UsersLoaded) {
-            return ListView.builder(
-              itemCount: state.users.length,
-              itemBuilder: (context, index) {
-                final user = state.users[index];
-                return user.id != currentUser.id
-                    ? ListTile(
-                        title: Text(user.name),
-                        subtitle: Text(user.email),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () => _onEditUser(user)),
-                            IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () => _onDeleteUser(user.id)),
-                          ],
-                        ),
-                      )
-                    : SizedBox(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  GoRouter.of(context).go("/categories");
-                                },
-                                icon: const Icon(Icons.category)),
-                            IconButton(
-                                onPressed: () {
-                                  nextScreen(
-                                      context, const ProductPricingPage());
-                                },
-                                icon: const Icon(Icons.price_change)),
-                            IconButton(
-                                onPressed: () {
-                                  nextScreen(context, const ProductPage());
-                                },
-                                icon: const Icon(
-                                    Icons.production_quantity_limits_rounded)),
-                            IconButton(
-                                onPressed: () {
-                                  nextScreen(
-                                      context, const InventoryListScreen());
-                                },
-                                icon: const Icon(Icons.inventory))
-                          ],
-                        ),
-                      );
-              },
-            );
-          } else if (state is AuthenticationError) {
-            return Center(child: Text("Error: ${state.message}"));
-          } else {
-            return const Center(child: Text("No users found"));
-          }
-        },
       ),
     );
   }

@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
             theme: AppTheme.lightTheme,
             debugShowCheckedModeBanner: false,
             routerConfig: GoRouter(
-              initialLocation: "/splash", // Corrected
+              initialLocation: "/users", // Corrected splash
               routes: [
                 GoRoute(
                     path: '/splash',

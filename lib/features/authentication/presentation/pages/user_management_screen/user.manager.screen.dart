@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mastermanager/core/session/session.manager.dart';
 import 'package:mastermanager/core/util/change.screen.manager.dart';
 import 'package:mastermanager/features/Inventory/presentation/pages/inventory.list.screen.dart';
+import 'package:mastermanager/features/authentication/presentation/pages/user_management_screen/image.test.dart';
 import 'package:mastermanager/features/authentication/presentation/pages/user_management_screen/user.profile.dart';
 import 'package:mastermanager/features/product/presentation/pages/product.page.dart';
 import 'package:mastermanager/features/product_category/domain/entities/product.category.dart';
@@ -191,7 +192,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               },
                               child: const Text(
                                 'Home',
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 64, 64, 64),
+                                ),
                               ),
                             )),
                         const SizedBox(
@@ -210,7 +214,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               },
                               child: const Text(
                                 'My finances',
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 64, 64, 64),
+                                ),
                               ),
                             )),
                         const SizedBox(
@@ -227,7 +234,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               },
                               child: const Text(
                                 'My Stats',
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 64, 64, 64),
+                                ),
                               ),
                             )),
                       ],
@@ -294,10 +304,20 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             Align(
               alignment: Alignment.topLeft,
               child: Container(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                width: MediaQuery.of(context).size.width * .89,
-              ),
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  width: MediaQuery.of(context).size.width * .89,
+                  child: const ImageTest() //AccountSettingsScreen(),
+                  ),
             ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.menu,
+                    color: Theme.of(context).primaryColor,
+                  )),
+            )
           ],
         ),
       ),

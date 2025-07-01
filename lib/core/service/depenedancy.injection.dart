@@ -76,6 +76,7 @@ import '../../features/product_category/domain/usecases/get.all.product.categori
 import '../../features/product_category/domain/usecases/get.product.category.by.id.dart';
 import '../../features/product_category/domain/usecases/update.product.category.dart';
 import '../../features/synchronisation/cubit/authentication_synch_manager_cubit/sync.trigger.cubit.dart';
+import '../image_storage_service/image.storage.service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -363,4 +364,6 @@ Future<void> setupDependencyInjection() async {
         getIt(),
       ),
     );
+  //Image manager
+  getIt.registerLazySingleton<ImageStorageService>(() => ImageStorageService());
 }

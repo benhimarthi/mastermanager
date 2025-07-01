@@ -52,6 +52,10 @@ dependencies:
   go_router: 
   get_it:
   uuid: 
+  image_pickers: 
+  path_provider_android: 
+  path: 
+  permission_handler: 
 
 
 dev_dependencies:
